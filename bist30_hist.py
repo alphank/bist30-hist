@@ -1,9 +1,43 @@
 #! python
 
 import datetime as dt
+from google.oauth2.service_account import Credentials
+import gspread
 import yfinance as yf
 
 from bist30_defs import BIST30
+
+# 1) Servis account kimlik bilgilerini yükle
+SCOPES = [
+   "https://www.googleapis.com/auth/spreadsheets",
+   "https://www.googleapis.com/auth/drive"
+]
+
+creds = Credentials.from_service_account_file(
+   "keys/bist30-historical-2d62d7c02a90.json",
+   scopes = SCOPES
+)
+
+SPREADSHEET_NAME = "Bist30 Hist"
+
+
+def test():
+    client = gspread.authorize( creds )
+
+
+    sh = client.open( SPREADSHEET_NAME )
+    ws = sh.sheet1
+
+    headers = [ "Tarih", "Sembol", "Fiyat" ]
+    ws.insert_row( headers, 1 )
+
+    rows = [
+        [ "2025-12-07", "USDTRY=X", "36.25" ],
+        [ "2025-12-07", "AEFES.IS", "120.50" ],
+    ]
+
+    for i, row in enumerate( rows, start = 2 ):
+        ws.insert_row( row, i )
 
 
 def main():
@@ -45,8 +79,8 @@ def main():
     print( f"total = {total}" )
 
 if __name__ == "__main__":
-    main()
-
+    # main()
+    test()
 
 
 
